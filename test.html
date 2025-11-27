@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>仅测试柱状图</title>
+    <!-- 只留必要样式：固定宽高，加边框 -->
+    <style>
+        #testBar {
+            width: 800px !important;
+            height: 400px !important;
+            border: 2px solid red !important; /* 红色边框，一眼能看到容器 */
+            margin: 50px auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="testBar"></div>
+
+    <!-- 用阿里云CDN，必加载成功 -->
+    <script src="https://cdn.aliyuncs.com/echarts/5.4.3/echarts.min.js"></script>
+    <script>
+        // 只执行最基础的柱状图初始化，无任何额外逻辑
+        const chart = echarts.init(document.getElementById('testBar'));
+        chart.setOption({
+            xAxis: { type: 'category', data: ['北京', '武汉', '广州'] },
+            yAxis: { type: 'value' },
+            series: [{ type: 'bar', data: [10000, 20000, 15000] }]
+        });
+    </script>
+</body>
+</html>
