@@ -1,30 +1,95 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <title>仅测试柱状图</title>
-    <!-- 只留必要样式：固定宽高，加边框 -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>恩施州外出务工统计（无拦截版）</title>
     <style>
-        #testBar {
-            width: 800px !important;
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .chart {
+            width: 100% !important;
             height: 400px !important;
-            border: 2px solid red !important; /* 红色边框，一眼能看到容器 */
-            margin: 50px auto;
+            margin: 20px 0;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: #2f6fb2;
+            margin-bottom: 30px;
         }
     </style>
 </head>
 <body>
-    <div id="testBar"></div>
+    <h1>恩施州外出务工人口统计</h1>
+    <!-- 图表容器 -->
+    <div id="barChart" class="chart"></div>
+    <div id="pieChart" class="chart"></div>
 
-    <!-- 用阿里云CDN，必加载成功 -->
-    <script src="https://cdn.aliyuncs.com/echarts/5.4.3/echarts.min.js"></script>
+    <!-- 【关键】ECharts官方CDN（jsdelivr，无跟踪行为，不会被拦截） -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
     <script>
-        // 只执行最基础的柱状图初始化，无任何额外逻辑
-        const chart = echarts.init(document.getElementById('testBar'));
-        chart.setOption({
-            xAxis: { type: 'category', data: ['北京', '武汉', '广州'] },
-            yAxis: { type: 'value' },
-            series: [{ type: 'bar', data: [10000, 20000, 15000] }]
+        // 原生JS，等待DOM完全加载（不依赖jQuery）
+        document.addEventListener('DOMContentLoaded', function() {
+            // 验证echarts是否加载成功（控制台输出true）
+            console.log("echarts是否加载成功：", typeof echarts !== 'undefined');
+
+            // 务工数据（简化版，确保无格式错误）
+            const workerData = [
+                { city: "北京", count: 19401 },
+                { city: "广东（广州）", count: 142222 },
+                { city: "上海", count: 35992 },
+                { city: "浙江（杭州）", count: 175686 },
+                { city: "江苏（南京）", count: 67328 },
+                { city: "西部（成都）", count: 72433 },
+                { city: "中部（武汉）", count: 415015 },
+                { city: "东北（沈阳）", count: 22681 }
+            ];
+
+            // 初始化柱状图
+            const barChart = echarts.init(document.getElementById('barChart'));
+            barChart.setOption({
+                title: { text: '各城市外出务工人数', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: workerData.map(item => item.city),
+                    axisLabel: { rotate: 30, fontSize: 11 }
+                },
+                yAxis: { type: 'value', name: '人数（人）' },
+                series: [{
+                    type: 'bar',
+                    data: workerData.map(item => item.count),
+                    color: '#3498db'
+                }]
+            });
+
+            // 初始化饼图
+            const pieChart = echarts.init(document.getElementById('pieChart'));
+            pieChart.setOption({
+                title: { text: '外出务工人口占比', left: 'center' },
+                tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
+                legend: { orient: 'horizontal', bottom: 10, fontSize: 11 },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    data: workerData.map(item => ({ name: item.city, value: item.count }))
+                }]
+            });
+
+            // 窗口自适应
+            window.addEventListener('resize', () => {
+                barChart.resize();
+                pieChart.resize();
+            });
         });
     </script>
 </body>
